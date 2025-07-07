@@ -26,7 +26,8 @@ export default function MapApp() {
 
   useEffect(() => {
     const script = document.createElement('script')
-    script.src = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU'
+    script.src = 'script.src = 'https://api-maps.yandex.ru/2.1/?apikey=468777d2-9e2d-4fcb-ae82-c6a647cee84a
+&lang=ru_RU'
     script.onload = () => {
       window.ymaps.ready(initMap)
     }
