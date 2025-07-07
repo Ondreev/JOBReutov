@@ -15,64 +15,6 @@
   </head>
   <body>
     <div id="map"></div>
-    <script>
-      const vacancies = [
-        {
-          title: 'Повар',
-          salary: 4500,
-          desc: 'Можно без опыта или с небольшим опытом. Обязательна медкнижка.',
-          address: 'Реутов, Калинина 8',
-          restaurant: 'Сакура',
-          contact: '+79099009271'
-        },
-        {
-          title: 'Курьер',
-          salary: 6000,
-          desc: 'На авто. Без опыта. 5–6 ч/день. Доставка еды.',
-          address: 'Реутов, Ленина 15',
-          restaurant: 'СушиВок',
-          contact: '+74951400557'
-        }
-      ];
-
-      ymaps.ready(function () {
-        const map = new ymaps.Map("map", {
-          center: [55.759, 37.863],
-          zoom: 15,
-          controls: ['zoomControl']
-        });
-
-        vacancies.forEach(async ({ title, salary, desc, address, contact, restaurant }) => {
-          try {
-            const res = await ymaps.geocode(address);
-            const coords = res.geoObjects.get(0).geometry.getCoordinates();
-
-            const caption = `${salary}₽\n${title}`;
-            const balloon = `
-              <strong>${title}</strong><br/>
-              ${restaurant} (${address})<br/>
-              <em>${desc}</em><br/>
-              <div style="margin-top: 6px">
-                <a href='https://wa.me/${contact.replace('+', '')}' target='_blank'>
-                  📲 Связаться в WhatsApp
-                </a>
-              </div>
-            `;
-
-            const placemark = new ymaps.Placemark(coords, {
-              hintContent: `${salary}₽/день`,
-              iconCaption: caption,
-              balloonContent: balloon
-            }, {
-              preset: 'islands#yellowCircleIconWithCaption'
-            });
-
-            map.geoObjects.add(placemark);
-          } catch (err) {
-            console.error(`Ошибка геокодирования: ${address}`, err);
-          }
-        });
-      });
-    </script>
+   
   </body>
 </html>
