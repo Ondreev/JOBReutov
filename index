@@ -1,4 +1,3 @@
-// ✅ Мини-приложение: интерактивная карта вакансий (адаптировано под мобильные)
 import { useEffect, useRef } from 'react'
 
 const vacancies = [
@@ -9,7 +8,6 @@ const vacancies = [
     desc: 'Можно без опыта или с небольшим опытом. Обязательна медкнижка.',
     address: 'Реутов, Калинина 8',
     restaurant: 'Сакура',
-    coords: [55.758938, 37.864818],
     contact: '+79099009271'
   },
   {
@@ -19,7 +17,6 @@ const vacancies = [
     desc: 'На авто. Без опыта. 5–6 ч/день. Доставка еды.',
     address: 'Реутов, Ленина 15',
     restaurant: 'СушиВок',
-    coords: [55.760972, 37.861302],
     contact: '+74951400557'
   }
 ]
@@ -31,14 +28,22 @@ export default function MapApp() {
     const script = document.createElement('script')
     script.src = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU'
     script.onload = () => {
-      window.ymaps.ready(() => {
-        const map = new window.ymaps.Map(mapRef.current, {
-          center: [55.759, 37.863],
-          zoom: 15,
-          controls: ['zoomControl']
-        })
+      window.ymaps.ready(initMap)
+    }
+    document.head.appendChild(script)
 
-        vacancies.forEach(({ title, salary, desc, address, coords, contact, restaurant }) => {
+    async function initMap() {
+      const map = new window.ymaps.Map(mapRef.current, {
+        center: [55.759, 37.863],
+        zoom: 15,
+        controls: ['zoomControl']
+      })
+
+      for (const { title, salary, desc, address, contact, restaurant } of vacancies) {
+        try {
+          const res = await window.ymaps.geocode(address)
+          const coords = res.geoObjects.get(0).geometry.getCoordinates()
+
           const balloon = `
             <strong>${title}</strong><br/>
             ${restaurant} (${address})<br/>
@@ -49,6 +54,7 @@ export default function MapApp() {
               </a>
             </div>
           `
+
           const caption = `${salary}₽\n${title}`
           const placemark = new window.ymaps.Placemark(coords, {
             hintContent: `${salary}₽/день`,
@@ -57,11 +63,13 @@ export default function MapApp() {
           }, {
             preset: 'islands#yellowCircleIconWithCaption'
           })
+
           map.geoObjects.add(placemark)
-        })
-      })
+        } catch (err) {
+          console.error(`Ошибка геокодирования адреса: ${address}`, err)
+        }
+      }
     }
-    document.head.appendChild(script)
   }, [])
 
   return (
